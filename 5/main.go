@@ -9,7 +9,8 @@ import (
 	"os"
 )
 
-//Реализовать утилиту фильтрации по аналогии с консольной утилитой (man grep — смотрим описание и основные параметры).
+//Реализовать утилиту фильтрации по аналогии с консольной утилитой
+//(man grep — смотрим описание и основные параметры).
 //
 //Реализовать поддержку утилитой следующих ключей:
 //-A - "after" печатать +N строк после совпадения
@@ -22,14 +23,15 @@ import (
 //-n - "line num", напечатать номер строки
 
 type Flags struct {
-	A int
-	B int
-	C int
-	c bool
-	i bool
-	v bool
-	F bool
-	n bool
+	A    int
+	B    int
+	C    int
+	c    bool
+	i    bool
+	v    bool
+	F    bool
+	n    bool
+	name string
 }
 
 //func main() {
@@ -41,7 +43,16 @@ type Flags struct {
 
 func main() {
 
-	var name string
+	var /*name,*/ search string
+
+	for {
+		data := make([]byte, 1)
+		_, err := os.Stdin.Read(data)
+		search += string(data)
+		if err != nil {
+			break
+		}
+	}
 
 	flagA := flag.Int("A", 0, "")
 	flagB := flag.Int("B", 0, "")
@@ -52,42 +63,55 @@ func main() {
 	flagF := flag.Bool("F", false, "")
 	flagn := flag.Bool("n", false, "")
 
-	flag.StringVar(&name, "name", "test.txt", "file-path")
+	flagName := flag.String("name", "test.txt", "")
 
 	flag.Parse()
 
 	f := Flags{
-		A: *flagA,
-		B: *flagB,
-		C: *flagC,
-		c: *flagc,
-		i: *flagi,
-		v: *flagv,
-		F: *flagF,
-		n: *flagn,
+		A:    *flagA,
+		B:    *flagB,
+		C:    *flagC,
+		c:    *flagc,
+		i:    *flagi,
+		v:    *flagv,
+		F:    *flagF,
+		n:    *flagn,
+		name: *flagName,
 	}
 
-	//fmt.Print(f)
+	//fmt.Println(f.name)
 
-	data := readFile(name, f.i, f.F)
+	fileData := readFile(f.name)
 
-	fmt.Println(data)
+	if f.A != 0 {
+		//fmt.Println("a")
+		//fmt.Print(modeA(fileData, search, f.A))
+		modeA(fileData, search, f.A)
+	} else if f.B != 0 {
+		//fmt.Println("b")
+		modeB(fileData, search, f.B)
+	} else if f.C != 0 {
+		//fmt.Println("c")
+		modeC(fileData, search, f.C)
+	}
 }
 
 //Чтение файла
-func readFile(name string, ig, F bool) (data []string) {
+func readFile(name string) (data []string) {
 
 	file, err := os.OpenFile(name, os.O_RDWR, 0666)
 	if err != nil {
 		log.Fatalf("Ошибка открытия файла")
 	}
 	defer file.Close()
+
+	data = make([]string, 0, 4)
 	buf := bufio.NewReader(file)
 
 	for {
 		line, err := buf.ReadString('\n')
-		fmt.Println(line)
-		fmt.Println(err)
+		//fmt.Println(line)
+		//fmt.Println(err)
 
 		if err != nil {
 			if err == io.EOF {
@@ -97,7 +121,43 @@ func readFile(name string, ig, F bool) (data []string) {
 				return
 			}
 		}
+		//data :=
+		data = append(data, line)
+	}
+	return data
+}
+
+//Вывод N строк после совпадения
+func modeA(data []string, searchS string, N int) []string {
+
+	newData := make([]string, 10)
+
+	for index, value := range data {
+		fmt.Print(searchS)
+		fmt.Print(value)
+		if value == searchS {
+			fmt.Print("test")
+			if index+N < len(data) {
+				newData = append(newData, data[index])
+			}
+		}
 	}
 
-	return
+	return newData
+}
+
+//Вывод N строк до совпадения
+func modeB(data []string, searchS string, N int) []string {
+
+	newData := make([]string, 10)
+
+	return newData
+}
+
+//Вывод N строк после совпадения и до совпадения
+func modeC(data []string, searchS string, N int) []string {
+
+	newData := make([]string, 10)
+
+	return newData
 }
