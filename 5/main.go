@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 //Реализовать утилиту фильтрации по аналогии с консольной утилитой
@@ -45,14 +46,31 @@ func main() {
 
 	var /*name,*/ search string
 
-	for {
-		data := make([]byte, 1)
-		_, err := os.Stdin.Read(data)
-		search += string(data)
-		if err != nil {
-			break
-		}
+	//for {
+	//	data := make([]byte, 1)
+	//	_, err := os.Stdin.Read(data)
+	//	in += string(data)
+	//	if err != nil {
+	//		break
+	//	}
+	//}
+	//
+	//scan := bufio.NewScanner(os.Stdin)
+	//print(scan)
+
+	data, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		log.Fatalln(err)
 	}
+
+	search = strings.TrimSpace(string(data))
+
+	//fmt.Println(len(search))
+	//fmt.Println(len("l"))
+
+	//search = strings.TrimSpace(in)
+
+	//print(search)
 
 	flagA := flag.Int("A", 0, "")
 	flagB := flag.Int("B", 0, "")
@@ -85,21 +103,23 @@ func main() {
 
 	if f.A != 0 {
 		//fmt.Println("a")
-		//fmt.Print(modeA(fileData, search, f.A))
-		modeA(fileData, search, f.A)
+		fmt.Print(modeA(fileData, search, f.A))
+		//modeA(fileData, search, f.A)
 	} else if f.B != 0 {
 		//fmt.Println("b")
-		modeB(fileData, search, f.B)
+		fmt.Print(modeB(fileData, search, f.B))
+		//modeB(fileData, search, f.B)
 	} else if f.C != 0 {
 		//fmt.Println("c")
-		modeC(fileData, search, f.C)
+		fmt.Println(modeC(fileData, search, f.C))
 	}
 }
 
 //Чтение файла
 func readFile(name string) (data []string) {
 
-	file, err := os.OpenFile(name, os.O_RDWR, 0666)
+	file, err := os.Open(name)
+	//file, err := os.ReadFile(name, os.O_RDWR, 0666)
 	if err != nil {
 		log.Fatalf("Ошибка открытия файла")
 	}
@@ -130,34 +150,82 @@ func readFile(name string) (data []string) {
 //Вывод N строк после совпадения
 func modeA(data []string, searchS string, N int) []string {
 
+	fmt.Println(data)
 	newData := make([]string, 10)
 
 	for index, value := range data {
-		fmt.Print(searchS)
-		fmt.Print(value)
-		if value == searchS {
-			fmt.Print("test")
-			if index+N < len(data) {
-				newData = append(newData, data[index])
+		val := strings.TrimSpace(value)
+		var count int
+		if val == searchS {
+			if index+N >= len(data) {
+				count = len(data) - 1
+			} else {
+				count = N
 			}
+			for j := index + 1; j <= count; j++ {
+				newData = append(newData, strings.TrimSpace(data[j]))
+			}
+
 		}
 	}
-
 	return newData
 }
 
 //Вывод N строк до совпадения
 func modeB(data []string, searchS string, N int) []string {
 
+	//fmt.Println(data)
 	newData := make([]string, 10)
 
+	for index, value := range data {
+		val := strings.TrimSpace(value)
+		var count int
+		if val == searchS {
+			if index+N >= len(data) {
+				count = len(data) - 1
+			} else {
+				count = index + N
+			}
+			for j := index - 1; j >= count; j-- {
+				newData = append(newData, strings.TrimSpace(data[j]))
+			}
+
+		}
+	}
 	return newData
 }
 
 //Вывод N строк после совпадения и до совпадения
 func modeC(data []string, searchS string, N int) []string {
 
+	//fmt.Println(data)
 	newData := make([]string, 10)
 
+	for index, value := range data {
+		val := strings.TrimSpace(value)
+		var count int
+		var count2 int
+		if val == searchS {
+
+			if index+N >= len(data) {
+				count = len(data) - 1
+			} else {
+				count = index + N
+			}
+
+			for j := index + 1; j <= count; j++ {
+				newData = append(newData, strings.TrimSpace(data[j]))
+			}
+
+			if index-N <= 0 {
+				count2 = 0
+			} else {
+				count2 = index - N
+			}
+			for j := index - 1; j >= count2; j-- {
+				newData = append(newData, strings.TrimSpace(data[j]))
+			}
+		}
+	}
 	return newData
 }
