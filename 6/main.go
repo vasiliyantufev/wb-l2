@@ -36,7 +36,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	//fmt.Print(data)
+	fmt.Print(string(data))
 
 	flags := flag.Bool("s", false, "separated")
 	flagf := flag.Int("f", column, "fields")
@@ -53,20 +53,23 @@ func main() {
 	//fmt.Print(f)
 
 	arr := make([][]string, 0)
-	str := strings.Split(string(data), "\n")
+	str := strings.Split(string(data), "|")
+	//str := strings.Split("yyy bbb", " ")
 
-	for _, s := range str {
-		if strings.Contains(s, f.d) {
-			arr = append(arr, strings.Split(s, f.d))
-			continue
-		}
-		if !f.s {
-			arr = append(arr, []string{s})
+	//fmt.Print(f.d)
+
+	for _, line := range str {
+		cols := strings.Split(line, f.d)
+
+		if f.f > 0 && f.f <= len(cols) {
+			fmt.Println(cols[f.f-1])
+		} else if !f.s {
+			fmt.Println(line)
 		}
 	}
 
 	for _, val := range arr {
-		fmt.Printf("%s\n", val[f.f-1])
+		fmt.Printf("%s\n", val)
 	}
 
 } /**/
