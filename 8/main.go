@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -28,27 +29,21 @@ import (
 
 func main() {
 
-	//h := exec.Command("pwd")
-	//h.Run()
-
-	//var c = exec.Command(command)
-
-	//print(c)
-
 	scan := bufio.NewScanner(os.Stdin)
 	//fmt.Print("Command: ")
 	for {
 		fmt.Print("Enter command: ")
+
 		if scan.Scan() {
 			command := scan.Text()
 			commands := strings.Split(command, " | ")
 			//fmt.Print(commands)
-			exec(commands)
+			execCD(commands)
 		}
 	}
 }
 
-func exec(commands []string) {
+func execCD(commands []string) {
 
 	for _, command := range commands {
 		cmd := strings.Split(command, " ")
@@ -59,19 +54,28 @@ func exec(commands []string) {
 			os.Chdir(cmd[1])
 		case `\exit`:
 			os.Exit(1)
+		case `pwd`:
+			dirr, err := os.Getwd()
+			if err != nil {
+				return
+			}
+			fmt.Println(dirr)
 		case "echo":
 			for i := 1; i < len(cmd); i++ {
 				fmt.Fprintf(os.Stdout, cmd[i]+" ")
 			}
 			fmt.Println()
-			//default:
+		default:
+			cmd := exec.Command(command)
 
-			//c.Stderr = os.Stderr
-			//c.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			cmd.Stdout = os.Stdout
 
+			err := cmd.Run()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
 		}
 	}
-	//for _, command := range commands {
-	//}
 
 }

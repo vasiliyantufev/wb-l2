@@ -38,7 +38,10 @@ GET /events_for_month
 
 var calendar = sync.Map{}
 
-var portNumber = ":8087"
+const (
+	layout     = "2006-01-02"
+	portNumber = ":8060"
+)
 
 type Event struct {
 	ID    string    `json:"id"`
@@ -46,23 +49,32 @@ type Event struct {
 	Date  time.Time `json:"date"`
 }
 
+type GetEvent struct {
+	ID    string `json:"id"`
+	Title string `json:"title"`
+	Date  string `json:"date"`
+}
+
 func create(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	title := r.FormValue("title")
-	date, err := time.Parse("2000-01-01", r.FormValue("date"))
+
+	date, err := time.Parse(layout, r.FormValue("date"))
+
 	if err != nil {
-		log.Fatal("Error date")
+		log.Fatal("Error date", err)
 		return
 	}
-
+	//
 	event := Event{
 		ID:    id,
 		Title: title,
 		Date:  date,
 	}
 
-	fmt.Println(id)
+	//fmt.Println(id)
+	fmt.Println(r.FormValue("date"))
 
 	calendar.Store(id, event)
 
@@ -72,7 +84,8 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
 	title := r.FormValue("title")
-	date, err := time.Parse("2000-01-01", r.FormValue("date"))
+	date, err := time.Parse(layout, r.FormValue("date"))
+
 	if err != nil {
 		log.Fatal("Error date")
 		return
@@ -84,7 +97,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 		Date:  date,
 	}
 
-	fmt.Println(id)
+	fmt.Println(r.FormValue("date"))
 
 	calendar.Store(id, event)
 }
@@ -98,36 +111,135 @@ func delete(w http.ResponseWriter, r *http.Request) {
 
 func getDay(w http.ResponseWriter, r *http.Request) {
 
-	result := make(map[string][]Event)
+	values := r.URL.Query()
+	day, err := time.Parse(layout, values.Get("day"))
 
-	calendar.Range(func(k, v any) bool {
-		e, ok := v.(Event)
-		if !ok {
-			return true
+	if err != nil {
+		log.Fatal("Error date")
+		return
+	}
+
+	//events := make(map[string][]Event)
+	events := make(map[string][]GetEvent)
+
+	calendar.Range(func(k, v interface{}) bool {
+
+		event, _ := v.(Event)
+
+		fmt.Println(event.Date)
+
+		if event.Date.Equal(day) {
+			//events = append(event)
+			events[event.Date.String()] = append(events[event.Date.String()], GetEvent{
+				ID:    event.ID,
+				Title: event.Title,
+				Date:  event.Date.Format(layout),
+			})
+
 		}
 
-		date := e.Date.Format("2006-01-02")
-
-		if _, ok := result[date]; !ok {
-			result[date] = make([]Event, 0)
-		}
-
-		result[date] = append(result[date], Event{
-			ID:    e.ID,
-			Title: e.Title,
-			Date:  e.Date,
-		})
-
+		//fmt.Println("range (): ", v)
+		fmt.Println(events)
 		return true
 	})
+	//return true
 }
 
 func getWeek(w http.ResponseWriter, r *http.Request) {
+
+	values := r.URL.Query()
+	day, err := time.Parse(layout, values.Get("day"))
+
+	if err != nil {
+		log.Fatal("Error date")
+		return
+	}
+
+	//end := e.Date.AddDate(0, 0, -int(e.Date.Weekday())).Format("2006-01-02")
+	start := day
+	end := day.AddDate(0, 0, 7)
+
+	//fmt.Println(start)
+	//fmt.Println(end)
+
+	events := make(map[string][]GetEvent)
+
+	calendar.Range(func(k, v interface{}) bool {
+
+		event, _ := v.(Event)
+
+		//fmt.Println(event.Date)
+
+		if event.Date.After(start) && event.Date.Before(end) {
+			//events = append(events, event)
+
+			event, _ := v.(Event)
+
+			fmt.Println(event.Date)
+
+			events[event.Date.String()] = append(events[event.Date.String()], GetEvent{
+				ID:    event.ID,
+				Title: event.Title,
+				Date:  event.Date.Format(layout),
+			})
+
+			//fmt.Println("range (): ", v)
+			return true
+		}
+
+		fmt.Println(events)
+
+		return true
+	})
 
 }
 
 func getMonth(w http.ResponseWriter, r *http.Request) {
 
+	values := r.URL.Query()
+	day, err := time.Parse(layout, values.Get("day"))
+
+	if err != nil {
+		log.Fatal("Error date")
+		return
+	}
+
+	//end := e.Date.AddDate(0, 0, -int(e.Date.Weekday())).Format("2006-01-02")
+	start := day
+	end := day.AddDate(0, 1, 0)
+
+	//fmt.Println(start)
+	//fmt.Println(end)
+
+	events := make(map[string][]GetEvent)
+
+	calendar.Range(func(k, v interface{}) bool {
+
+		event, _ := v.(Event)
+
+		//fmt.Println(event.Date)
+
+		if event.Date.After(start) && event.Date.Before(end) {
+			//events = append(events, event)
+
+			event, _ := v.(Event)
+
+			fmt.Println(event.Date)
+
+			events[event.Date.String()] = append(events[event.Date.String()], GetEvent{
+				ID:    event.ID,
+				Title: event.Title,
+				Date:  event.Date.Format(layout),
+			})
+
+			//fmt.Println("range (): ", v)
+			return true
+		}
+
+		fmt.Println(events)
+
+		return true
+	})
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
