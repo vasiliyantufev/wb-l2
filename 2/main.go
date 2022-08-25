@@ -23,8 +23,8 @@ qwe\45 => qwe44444 (*)
 qwe\\5 => qwe\\\\\ (*)
 */
 
-var ErrFirstDigit = errors.New("Пустая строка!")
-var ErrLastSlash = errors.New("Слеш последний символ!")
+var ErrFirstDigit = errors.New("Первый символ не может быть число!")
+var ErrLastBackSlash = errors.New("Бэкслеш не может быть последним символом!")
 var ErrConverter = errors.New("Ошибка конвертации!")
 
 func main() {
@@ -47,8 +47,7 @@ func pakg(s string) (string, error) {
 	//var runes []rune
 	var outString []rune
 	inputStr := []rune(s)
-
-	var slash bool
+	backslash := false
 
 	for i, val := range inputStr {
 
@@ -60,6 +59,17 @@ func pakg(s string) (string, error) {
 			outString = append(outString, val)
 		}
 
+		if val == '\\' {
+			if backslash {
+				outString = append(outString, inputStr[i-1])
+				backslash = false
+				continue
+			} else if i+1 == len(inputStr) {
+				return "", ErrLastBackSlash
+			}
+			backslash = true
+		}
+
 		if unicode.IsDigit(val) {
 
 			st := string(val)
@@ -69,9 +79,9 @@ func pakg(s string) (string, error) {
 				return "", ErrConverter
 			}
 
-			if slash == true {
+			if backslash == true {
 				outString = append(outString, val)
-				slash = false
+				backslash = false
 			} else if count > 1 {
 				for j := 0; j < count-1; j++ {
 					outString = append(outString, inputStr[i-1])
@@ -79,14 +89,6 @@ func pakg(s string) (string, error) {
 			}
 		}
 
-		if val == '\\' {
-			if inputStr[i-1] == '\\' {
-				outString = append(outString, inputStr[i-1])
-				slash = false
-			} else {
-				slash = true
-			}
-		}
 	}
 	return string(outString), nil
 }
