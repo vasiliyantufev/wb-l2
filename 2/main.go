@@ -34,15 +34,11 @@ func main() {
 	fmt.Print("Ведите строку: ")
 	fmt.Scan(&str)
 
-	str, err := pakg(str)
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	str = pakg(str)
 	fmt.Println(str)
 }
 
-func pakg(s string) (string, error) {
+func pakg(s string) string {
 
 	//var runes []rune
 	var outString []rune
@@ -52,7 +48,7 @@ func pakg(s string) (string, error) {
 	for i, val := range inputStr {
 
 		if i == 0 && unicode.IsDigit(val) {
-			return "", ErrFirstDigit
+			return ""
 		}
 
 		if unicode.IsLetter(val) {
@@ -65,7 +61,7 @@ func pakg(s string) (string, error) {
 				backslash = false
 				continue
 			} else if i+1 == len(inputStr) {
-				return "", ErrLastBackSlash
+				return ""
 			}
 			backslash = true
 		}
@@ -76,7 +72,7 @@ func pakg(s string) (string, error) {
 			count, err := strconv.Atoi(string(st))
 
 			if err != nil {
-				return "", ErrConverter
+				return ""
 			}
 
 			if backslash == true {
@@ -90,5 +86,5 @@ func pakg(s string) (string, error) {
 		}
 
 	}
-	return string(outString), nil
+	return string(outString)
 }
