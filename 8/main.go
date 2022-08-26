@@ -38,12 +38,12 @@ func main() {
 			command := scan.Text()
 			commands := strings.Split(command, " | ")
 			//fmt.Print(commands)
-			execCD(commands)
+			execCMD(commands)
 		}
 	}
 }
 
-func execCD(commands []string) {
+func execCMD(commands []string) {
 
 	for _, command := range commands {
 		cmd := strings.Split(command, " ")

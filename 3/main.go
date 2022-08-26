@@ -124,10 +124,11 @@ func readFile(name string) (data [][]string) {
 		data = append(data, strings.Fields(str))
 	}
 
+	fmt.Println(data)
 	return
 }
 
-func sortNumber(data [][]string, k int, r bool) {
+func sortNumber(data [][]string, k int, r bool) [][]string {
 	sort.Slice(data, func(i, j int) bool {
 
 		a := toInt(data[i][k-1])
@@ -137,10 +138,12 @@ func sortNumber(data [][]string, k int, r bool) {
 			return a > b
 		}
 		return a < b
-
 	})
+
+	return data
 }
-func sortMonth(data [][]string, k int, r bool) {
+
+func sortMonth(data [][]string, k int, r bool) [][]string {
 
 	sort.Slice(data, func(i, j int) bool {
 		var a, b int
@@ -151,8 +154,9 @@ func sortMonth(data [][]string, k int, r bool) {
 			return a > b
 		}
 		return a < b
-
 	})
+
+	return data
 }
 
 func toInt(s string) int {
