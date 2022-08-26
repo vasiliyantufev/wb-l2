@@ -46,18 +46,6 @@ func main() {
 
 	var /*name,*/ search string
 
-	//for {
-	//	data := make([]byte, 1)
-	//	_, err := os.Stdin.Read(data)
-	//	in += string(data)
-	//	if err != nil {
-	//		break
-	//	}
-	//}
-	//
-	//scan := bufio.NewScanner(os.Stdin)
-	//print(scan)
-
 	data, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		log.Fatalln(err)
@@ -142,7 +130,7 @@ func readFile(name string) (data []string) {
 			}
 		}
 		//data :=
-		data = append(data, line)
+		data = append(data, strings.TrimSpace(line))
 	}
 	return data
 }
@@ -151,7 +139,7 @@ func readFile(name string) (data []string) {
 func modeA(data []string, searchS string, N int) []string {
 
 	fmt.Println(data)
-	newData := make([]string, 10)
+	var newData []string
 
 	for index, value := range data {
 		val := strings.TrimSpace(value)
@@ -165,7 +153,7 @@ func modeA(data []string, searchS string, N int) []string {
 			for j := index + 1; j <= count; j++ {
 				newData = append(newData, strings.TrimSpace(data[j]))
 			}
-
+			break
 		}
 	}
 	return newData
@@ -175,21 +163,21 @@ func modeA(data []string, searchS string, N int) []string {
 func modeB(data []string, searchS string, N int) []string {
 
 	//fmt.Println(data)
-	newData := make([]string, 10)
+	var newData []string
 
 	for index, value := range data {
 		val := strings.TrimSpace(value)
 		var count int
 		if val == searchS {
-			if index+N >= len(data) {
-				count = len(data) - 1
+			if index-N <= 0 {
+				count = 0
 			} else {
-				count = index + N
+				count = index - N
 			}
-			for j := index - 1; j >= count; j-- {
+			for j := count; j < index; j++ {
 				newData = append(newData, strings.TrimSpace(data[j]))
 			}
-
+			break
 		}
 	}
 	return newData
@@ -199,7 +187,7 @@ func modeB(data []string, searchS string, N int) []string {
 func modeC(data []string, searchS string, N int) []string {
 
 	//fmt.Println(data)
-	newData := make([]string, 10)
+	var newData []string
 
 	for index, value := range data {
 		val := strings.TrimSpace(value)
@@ -207,24 +195,24 @@ func modeC(data []string, searchS string, N int) []string {
 		var count2 int
 		if val == searchS {
 
-			if index+N >= len(data) {
-				count = len(data) - 1
-			} else {
-				count = index + N
-			}
-
-			for j := index + 1; j <= count; j++ {
-				newData = append(newData, strings.TrimSpace(data[j]))
-			}
-
 			if index-N <= 0 {
 				count2 = 0
 			} else {
 				count2 = index - N
 			}
-			for j := index - 1; j >= count2; j-- {
+			for j := count2; j < index; j++ {
 				newData = append(newData, strings.TrimSpace(data[j]))
 			}
+
+			if index+N >= len(data) {
+				count = len(data) - 1
+			} else {
+				count = index + N
+			}
+			for j := index + 1; j <= count; j++ {
+				newData = append(newData, strings.TrimSpace(data[j]))
+			}
+			break
 		}
 	}
 	return newData
