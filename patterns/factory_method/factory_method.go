@@ -16,7 +16,6 @@ const (
 
 func main() {
 	factory := NewCreator()
-
 	products := []string{
 		factory.CreateProduct(A).Use(),
 		factory.CreateProduct(B).Use(),
@@ -30,13 +29,11 @@ func main() {
 type Creator interface {
 	CreateProduct(action action) Product // Фабричный метод
 }
-
 // Product обеспечивает интерфейс продукта.
 // Все продукты, возвращаемые фабрикой, должны иметь единый интерфейс.
 type Product interface {
 	Use() string //Каждый продукт должен быть полезным
 }
-
 // ConcreteCreator реализует Creator интерфейс.
 type ConcreteCreator struct{}
 
@@ -48,7 +45,6 @@ func NewCreator() Creator {
 // CreateProduct фабричный метод.
 func (p *ConcreteCreator) CreateProduct(action action) Product {
 	var product Product
-
 	switch action {
 	case A:
 		product = &ConcreteProductA{string(action)}
@@ -59,7 +55,6 @@ func (p *ConcreteCreator) CreateProduct(action action) Product {
 	default:
 		log.Fatalln("Unknown Action")
 	}
-
 	return product
 }
 
@@ -67,27 +62,22 @@ func (p *ConcreteCreator) CreateProduct(action action) Product {
 type ConcreteProductA struct {
 	action string
 }
-
 // Use возвращает действие продукта.
 func (p *ConcreteProductA) Use() string {
 	return p.action
 }
-
 // ConcreteProductB реализует продукт "B".
 type ConcreteProductB struct {
 	action string
 }
-
 // Use возвращает действие продукта.
 func (p *ConcreteProductB) Use() string {
 	return p.action
 }
-
 // ConcreteProductC реализует продукт "C".
 type ConcreteProductC struct {
 	action string
 }
-
 // Use возвращает действие продукта.
 func (p *ConcreteProductC) Use() string {
 	return p.action
