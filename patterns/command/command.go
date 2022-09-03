@@ -6,12 +6,9 @@ func main() {
 
 	invoker := &Invoker{}
 	receiver := &Receiver{}
-
 	invoker.StoreCommand(&ToggleOnCommand{receiver: receiver})
 	invoker.StoreCommand(&ToggleOffCommand{receiver: receiver})
-
 	result := invoker.Execute()
-
 	fmt.Println(result)
 }
 
@@ -39,16 +36,13 @@ type ToggleOffCommand struct {
 func (c *ToggleOffCommand) Execute() string {
 	return c.receiver.ToggleOff()
 }
-
 // Receiver реализация.
 type Receiver struct {
 }
-
 // ToggleOn реализация.
 func (r *Receiver) ToggleOn() string {
 	return "Toggle On"
 }
-
 // ToggleOff реализация.
 func (r *Receiver) ToggleOff() string {
 	return "Toggle Off"
@@ -58,7 +52,6 @@ func (r *Receiver) ToggleOff() string {
 type Invoker struct {
 	commands []Command
 }
-
 // StoreCommand добавляет команду.
 func (i *Invoker) StoreCommand(command Command) {
 	i.commands = append(i.commands, command)
