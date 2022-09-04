@@ -27,7 +27,7 @@ func TestFindAnagrams(t *testing.T) {
 	for _, testCase := range testTable {
 		result := FindAnagrams(testCase.input)
 
-		t.Logf("Calling Unpack(%s), result %s\n", testCase.input, result)
+		t.Logf("Calling FindAnagrams(%s), result %s\n", testCase.input, result)
 
 		//Assert сравнение результата с ожиданием
 		assert.Equal(t, testCase.expected, result,

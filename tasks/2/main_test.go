@@ -34,7 +34,7 @@ func TestPakg(t *testing.T) {
 	for _, testCase := range testTable {
 		result := pakg(testCase.input)
 
-		t.Logf("Calling Unpack(%v), result %s\n", testCase.input, result)
+		t.Logf("Calling pakg(%v), result %s\n", testCase.input, result)
 
 		//Assert сравнение результата с ожиданием
 		assert.Equal(t, testCase.expected, result,

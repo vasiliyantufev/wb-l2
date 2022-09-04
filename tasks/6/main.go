@@ -52,8 +52,8 @@ func main() {
 
 	//fmt.Print(f)
 
-	arr := make([][]string, 0)
-	str := strings.Split(string(data), "|")
+	//	arr := make([][]string, 0)
+	str := strings.Split(string(data), " | ")
 	//str := strings.Split("yyy bbb", " ")
 
 	//fmt.Print(f.d)
@@ -68,8 +68,8 @@ func main() {
 		}
 	}
 
-	for _, val := range arr {
-		fmt.Printf("%s\n", val)
-	}
+	//for _, val := range arr {
+	//	fmt.Printf("%s\n", val)
+	//}
 
 } /**/
