@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"bufio"
 )
 
 //Реализовать утилиту аналог консольной команды cut (man cut).
@@ -24,52 +25,84 @@ const (
 )
 
 type Flags struct {
-	s bool
-	f int
-	d string
+	field int
+	separated bool
+	delimiter string
+	name string
 }
 
 func main() {
 
-	data, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	fmt.Print(string(data))
-
-	flags := flag.Bool("s", false, "separated")
-	flagf := flag.Int("f", column, "fields")
-	flagd := flag.String("d", separate, "delimiter")
+	flagField := flag.Int("f", column, "fields")
+	flagDelimiter := flag.String("d", separate, "delimiter")
+	flagSeparated := flag.Bool("s", false, "separated")
+	flagName := flag.String("name", "test.txt", "")
 
 	flag.Parse()
 
-	f := Flags{
-		s: *flags,
-		f: *flagf,
-		d: *flagd,
+	flag := Flags{
+		field: *flagField,
+		delimiter: *flagDelimiter,
+		separated: *flagSeparated,
+		name: *flagName,
 	}
 
-	//fmt.Print(f)
+	fileData := readFile(flag.name)
 
-	//	arr := make([][]string, 0)
-	str := strings.Split(string(data), " | ")
-	//str := strings.Split("yyy bbb", " ")
+    //fmt.Println(fileData)
 
-	//fmt.Print(f.d)
+ 	cut := Cut(fileData, flag.field, flag.delimiter, flag.separated)
+ 	Out(cut)
+}
 
-	for _, line := range str {
-		cols := strings.Split(line, f.d)
+//Чтение файла*/
+func readFile(name string) (data []string) {
 
-		if f.f > 0 && f.f <= len(cols) {
-			fmt.Println(cols[f.f-1])
-		} else if !f.s {
-			fmt.Println(line)
+	file, err := os.Open(name)
+	if err != nil {
+		log.Fatalf("Ошибка открытия файла")
+	}
+	defer file.Close()
+
+	buf := bufio.NewReader(file)
+	for {
+		line, err := buf.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				log.Fatalf("Ошибка чтения файла: %v\n", err)
+				return
+			}
 		}
+		data = append(data, strings.TrimSpace(line))
+	}
+	return
+}
+
+func Cut(data []string, fields int, delimiter string, separated bool) ([]string) {
+
+    var d []string
+	for _, line := range data {
+
+		cols := strings.Split(line, delimiter)
+
+				if fields > 0 && fields <= len(cols) {
+        			//fmt.Println(cols[fields-1])
+        			d = append(d, cols[fields-1])
+        		} else if !separated {
+        			//fmt.Println(line)
+        			d = append(d, line)
+        		}
 	}
 
-	//for _, val := range arr {
-	//	fmt.Printf("%s\n", val)
-	//}
+	//fmt.Println(d)
+	return d
+}
 
-} /**/
+//Output method. [3]
+func Out(data []string) {
+	for _, val := range data {
+		fmt.Println(val)
+	}
+}
